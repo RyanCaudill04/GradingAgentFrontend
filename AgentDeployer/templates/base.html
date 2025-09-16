@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Grader{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'submit_grading_request' %}">Submit Grade</a>
+            <a href="{% url 'upload_criteria_view' %}">Upload Criteria</a>
+            <a href="{% url 'view_grades' %}">View Grades</a>
+        </div>
+        <div class="card">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
