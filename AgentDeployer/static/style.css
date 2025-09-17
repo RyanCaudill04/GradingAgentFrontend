@@ -1,113 +1,95 @@
-:root {
-    --apple-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    --background-color: #f5f5f7;
-    --card-background-color: #ffffff;
-    --text-color: #1d1d1f;
-    --link-color: #007aff;
-    --border-color: #d2d2d7;
-    --border-radius: 12px;
-    --shadow: 0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05);
-}
-
+/* General Body Styles */
 body {
-    font-family: var(--apple-font);
-    background-color: var(--background-color);
-    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    background-color: #f0f2f5; /* Light gray background */
+    color: #333;
+    line-height: 1.6;
 }
 
+/* Container for content */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
 }
 
-.card {
-    background-color: var(--card-background-color);
-    border-radius: var(--border-radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
+/* Header Styles */
+h1, h2, h3, h4, h5, h6 {
+    color: #1a1a1a;
+    font-weight: 600;
+    margin-top: 0;
     margin-bottom: 20px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: var(--text-color);
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+    color: #007aff; /* Apple blue */
 }
 
+/* Link Styles */
 a {
-    color: var(--link-color);
+    color: #007aff;
     text-decoration: none;
+    transition: color 0.2s ease-in-out;
 }
 
 a:hover {
+    color: #0056b3;
     text-decoration: underline;
 }
 
-.nav {
-    display: flex;
-    justify-content: center;
-    background-color: var(--card-background-color);
-    padding: 10px 0;
-    margin-bottom: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-.nav a {
+/* Button Styles (example) */
+.button {
+    display: inline-block;
     padding: 10px 20px;
-    font-weight: 500;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.form-group input[type="text"], .form-group input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-sizing: border-box;
-}
-
-.btn {
-    background-color: var(--link-color);
-    color: white;
-    padding: 10px 20px;
+    background-color: #007aff;
+    color: #ffffff;
     border: none;
     border-radius: 8px;
+    font-size: 1em;
     cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn:hover {
-    opacity: 0.9;
+.button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
+/* Navigation Bar (example, if needed) */
+.navbar {
+    background-color: #ffffff;
+    padding: 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
 }
 
-.table th, .table td {
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    text-align: left;
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
-.table th {
-    background-color: #f5f5f7;
+.navbar li {
+    margin: 0 15px;
 }
 
-pre {
-    background-color: #f5f5f7;
-    padding: 10px;
-    border-radius: 8px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+.navbar a {
+    color: #333;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.navbar a:hover {
+    color: #007aff;
+    text-decoration: none;
 }

@@ -3,6 +3,9 @@ import requests
 from django.http import JsonResponse
 import json
 
+def home(request):
+    return render(request, 'home.html')
+
 def fetch_data_from_fastapi(request):
     fastapi_url = "http://fastapi:8001/"  # Adjust URL as needed
 
