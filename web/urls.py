@@ -16,12 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
-
-def home(request):
-    return HttpResponse("Welcome to my Django site!")
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('', home),
+    path('', RedirectView.as_view(url='/AgentDeployer/grade/', permanent=False)),
     path('AgentDeployer/', include('AgentDeployer.urls')),  # Include your app's URLs here
 ]
