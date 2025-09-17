@@ -20,8 +20,13 @@
         </div>
         <button type="submit" class="btn">Submit</button>
     </form>
+    {% if submission_id %}
+    <h2>Submission Status:</h2>
+    <p>Your submission (ID: {{ submission_id }}) is {{ submission_status }}.</p>
+    <p><a href="{% url 'submission_detail' submission_id=submission_id %}">View Submission Details</a></p>
+    {% endif %}
     {% if result %}
-    <h2>Result:</h2>
+    <h2>FastAPI Response:</h2>
     <pre>{{ result|safe }}</pre>
     {% endif %}
 {% endblock %}

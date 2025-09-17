@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 import requests
 from django.http import JsonResponse
 import json
+from .models import Submission # Import the Submission model
 
 def home(request):
     return render(request, 'home.html')
@@ -19,11 +20,18 @@ def fetch_data_from_fastapi(request):
     return JsonResponse(data)
 
 def submit_grading_request(request):
-    result = None
     if request.method == 'POST':
         assignment_name = request.POST.get('assignment_name')
         repo_link = request.POST.get('repo_link')
         token = request.POST.get('token')
+
+        # 1. Create Submission instance with PENDING status
+        submission = Submission.objects.create(
+            assignment_name=assignment_name,
+            repo_link=repo_link,
+            token=token,
+            status='PENDING'
+        )
 
         fastapi_url = "http://fastapi:8001/grade"
         payload = {
@@ -35,11 +43,22 @@ def submit_grading_request(request):
         try:
             response = requests.post(fastapi_url, json=payload, timeout=30)
             response.raise_for_status()
-            result = json.dumps(response.json(), indent=4)
+            fastapi_result = response.json()
+            # 3. Update Submission with COMPLETED status and FastAPI response
+            submission.status = 'COMPLETED'
+            submission.fastapi_response = fastapi_result
+            submission.save()
+            result = json.dumps(fastapi_result, indent=4)
         except requests.RequestException as e:
+            # 3. Update Submission with FAILED status and error
+            submission.status = 'FAILED'
+            submission.fastapi_response = {"error": str(e)}
+            submission.save()
             result = json.dumps({"error": str(e)}, indent=4)
 
-    return render(request, 'submit_grading_request.html', {'result': result})
+        # Redirect to the submission detail page
+        return redirect('submission_detail', submission_id=submission.submission_id)
+    return render(request, 'submit_grading_request.html', {'result': None})
 
 def upload_criteria_view(request):
     result = None
@@ -50,7 +69,7 @@ def upload_criteria_view(request):
         if assignment_name and criteria_file:
             fastapi_url = f"http://fastapi:8001/assignments/{assignment_name}/criteria"
             files = {'criteria_file': (criteria_file.name, criteria_file.read(), criteria_file.content_type)}
-            
+
             try:
                 response = requests.post(fastapi_url, files=files, timeout=10)
                 response.raise_for_status()
@@ -70,12 +89,13 @@ def view_grades(request):
         results = response.json()
     except requests.RequestException as e:
         results = [{"error": str(e)}]
-    
-    # The results from the database will not have the assignment name, so we need to fetch it.
-    # For now, we will just display the assignment id.
-    # A better solution would be to join the tables in the backend.
-    
-    # The results from the database will not have the assignment name, so we need to fetch it.
-    # I will modify the backend to include the assignment name in the response.
-    
+
     return render(request, 'view_grades.html', {'results': results})
+
+def submission_list(request):
+    submissions = Submission.objects.all().order_by('-submission_time')
+    return render(request, 'submission_list.html', {'submissions': submissions})
+
+def submission_detail(request, submission_id):
+    submission = get_object_or_404(Submission, submission_id=submission_id)
+    return render(request, 'submission_detail.html', {'submission': submission})
