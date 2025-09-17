@@ -3,6 +3,7 @@ import uuid
 
 class Submission(models.Model):
     submission_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    student_name = models.CharField(max_length=255, blank=True, null=True)
     assignment_name = models.CharField(max_length=255)
     repo_link = models.URLField(max_length=2000)
     token = models.CharField(max_length=255, blank=True, null=True)

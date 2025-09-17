@@ -82,15 +82,8 @@ def upload_criteria_view(request):
     return render(request, 'upload_criteria.html', {'result': result})
 
 def view_grades(request):
-    fastapi_url = "http://fastapi:8001/grades"
-    try:
-        response = requests.get(fastapi_url, timeout=10)
-        response.raise_for_status()
-        results = response.json()
-    except requests.RequestException as e:
-        results = [{"error": str(e)}]
-
-    return render(request, 'view_grades.html', {'results': results})
+    assignments = Submission.objects.values_list('assignment_name', flat=True).distinct()
+    return render(request, 'view_grades.html', {'assignments': assignments})
 
 def submission_list(request):
     submissions = Submission.objects.all().order_by('-submission_time')
@@ -99,3 +92,35 @@ def submission_list(request):
 def submission_detail(request, submission_id):
     submission = get_object_or_404(Submission, submission_id=submission_id)
     return render(request, 'submission_detail.html', {'submission': submission})
+
+def assignment_detail(request, assignment_name):
+    submissions = Submission.objects.filter(assignment_name=assignment_name)
+    search_query = request.GET.get('search', '')
+    sort_by = request.GET.get('sort_by', '-submission_time')
+
+    if search_query:
+        submissions = submissions.filter(student_name__icontains=search_query)
+
+    if sort_by == 'student_name':
+        submissions = submissions.order_by('student_name')
+    elif sort_by == 'final_grade':
+        submissions = sorted(submissions, key=lambda s: s.fastapi_response.get('final_grade', 0))
+    else:
+        submissions = submissions.order_by(sort_by)
+
+    return render(request, 'assignment_detail.html', {
+        'submissions': submissions, 
+        'assignment_name': assignment_name,
+        'search_query': search_query,
+    })
+
+def student_grades(request, student_name):
+    fastapi_url = f"http://fastapi:8001/grades/{student_name}"
+    try:
+        response = requests.get(fastapi_url, timeout=10)
+        response.raise_for_status()
+        grades = response.json()
+    except requests.RequestException as e:
+        grades = [{"error": str(e)}]
+
+    return render(request, 'student_grades.html', {'grades': grades, 'student_name': student_name})

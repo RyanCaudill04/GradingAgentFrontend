@@ -1,24 +1,32 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Submission History{% endblock %}
 
 {% block content %}
-<div class="container">
     <h1>Submission History</h1>
 
     {% if submissions %}
-    <ul class="submission-list">
-        {% for submission in submissions %}
-        <li>
-            <a href="{% url 'submission_detail' submission.submission_id %}">
-                <strong>{{ submission.assignment_name }}</strong> - {{ submission.submission_time|date:"M d, Y H:i" }} - Status: <span class="status-{{ submission.status|lower }}">{{ submission.status }}</span>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Assignment</th>
+                    <th>Submission Time</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for submission in submissions %}
+                    <tr>
+                        <td>{{ submission.assignment_name }}</td>
+                        <td>{{ submission.submission_time|date:"M d, Y H:i" }}</td>
+                        <td><span class="status-{{ submission.status|lower }}">{{ submission.status }}</span></td>
+                        <td><a href="{% url 'submission_detail' submission.submission_id %}">View</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-    <p>No submissions yet.</p>
+        <p>No submissions yet.</p>
     {% endif %}
-</div>
 {% endblock %}

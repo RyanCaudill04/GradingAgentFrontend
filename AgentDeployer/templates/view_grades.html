@@ -1,23 +1,27 @@
 {% extends 'base.html' %}
 
-{% block title %}Grading Results{% endblock %}
+{% block title %}View Grades{% endblock %}
 
 {% block content %}
-    <h1>Grading Results</h1>
-    <table class="table">
-        <tr>
-            <th>Assignment</th>
-            <th>Student</th>
-            <th>Grade</th>
-            <th>Feedback</th>
-        </tr>
-        {% for result in results %}
-        <tr>
-            <td>{{ result.assignment_name }}</td>
-            <td>{{ result.student_id }}</td>
-            <td>{{ result.grade }}</td>
-            <td>{{ result.feedback }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h1>View Grades</h1>
+
+    <div class="assignments-list">
+        <h2>Assignments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Assignment Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment }}</td>
+                        <td><a href="{% url 'assignment_detail' assignment_name=assignment %}">View Grades</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
