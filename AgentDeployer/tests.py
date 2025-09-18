@@ -76,3 +76,75 @@ class FrontendBackendCommunicationTests(TestCase):
     # Add more tests for upload_criteria_view, view_grades, and other views
     # For upload_criteria_view, you'll need to mock requests.post with files
     # For view_grades, you'll need to mock requests.get
+
+from io import BytesIO
+
+class CriteriaUploadTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+    @patch('requests.post')
+    def test_upload_criteria_view_success(self, mock_post):
+        # Mock the response from the backend
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json.return_value = {"message": "Criteria for test_assignment saved."}
+
+        # Create a dummy file for upload
+        file_content = b'Test criteria content'
+        dummy_file = BytesIO(file_content)
+        dummy_file.name = 'criteria.txt'
+
+        # Simulate a POST request to the view
+        response = self.client.post(reverse('upload_criteria'), {
+            'assignment_name': 'test_assignment',
+            'criteria_file': dummy_file
+        })
+
+        # Check that the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the success message is in the response context
+        self.assertIn('result', response.context)
+        self.assertIn('Criteria for test_assignment saved.', response.context['result'])
+
+class OtherViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_home_view(self):
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_submission_list_view(self):
+        response = self.client.get(reverse('submission_list'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_submission_detail_view(self):
+        # Create a dummy submission to test the detail view
+        submission = Submission.objects.create(
+            assignment_name='test_assignment',
+            repo_link='https://github.com/test/repo',
+            token='test_token',
+            status='COMPLETED',
+            fastapi_response={"grade": "A", "feedback": "Great work!"}
+        )
+        response = self.client.get(reverse('submission_detail', args=[submission.submission_id]))
+        self.assertEqual(response.status_code, 200)
+
+    @patch('requests.get')
+    def test_view_grades_view(self, mock_get):
+        # Mock the response from the backend
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = [
+            {
+                "assignment_name": "test_assignment",
+                "student_id": "student1",
+                "grade": 90,
+                "feedback": "Good work"
+            }
+        ]
+
+        response = self.client.get(reverse('view_grades'))
+        self.assertEqual(response.status_code, 200)

@@ -67,11 +67,23 @@ def upload_criteria_view(request):
         criteria_file = request.FILES.get('criteria_file')
 
         if assignment_name and criteria_file:
-            fastapi_url = f"http://fastapi:8001/assignments/{assignment_name}/criteria"
+            # Create the assignment first
+            fastapi_url_create = "http://fastapi:8001/assignments"
+            payload = {"assignment_name": assignment_name}
+            try:
+                response = requests.post(fastapi_url_create, json=payload, timeout=10)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                if response.status_code != 400:
+                    result = json.dumps({"error": str(e)}, indent=4)
+                    return render(request, 'upload_criteria.html', {'result': result})
+
+            # Then upload the criteria
+            fastapi_url_upload = f"http://fastapi:8001/assignments/{assignment_name}/criteria"
             files = {'criteria_file': (criteria_file.name, criteria_file.read(), criteria_file.content_type)}
 
             try:
-                response = requests.post(fastapi_url, files=files, timeout=10)
+                response = requests.post(fastapi_url_upload, files=files, timeout=10)
                 response.raise_for_status()
                 result = json.dumps(response.json(), indent=4)
             except requests.RequestException as e:
